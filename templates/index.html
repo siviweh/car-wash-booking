@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Car Wash Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #ecf0f1;
+            --dark-text: #2c3e50;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .booking-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--secondary-color);
+        }
+        
+        .bookings-list {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--accent-color);
+        }
+        
+        .form-label {
+            color: var(--dark-text);
+            font-weight: 500;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0.75rem;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .list-group-item {
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .list-group-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .flash-message {
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-type-select {
+            background-color: var(--light-bg);
+        }
+        
+        .booking-info {
+            padding: 0.5rem 0;
+        }
+        
+        .booking-info .registration {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .cancel-btn {
+            color: var(--accent-color) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            color: #c0392b !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-car-wash me-2"></i>Premium Car Wash Booking
+            </span>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} flash-message">
+                        <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="booking-form">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-plus me-2"></i>Book a Car Wash
+                    </h3>
+                    <form action="{{ url_for('book') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="customer_name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Your Name
+                            </label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="car_model" class="form-label">
+                                <i class="fas fa-car me-2"></i>Car Model
+                            </label>
+                            <input type="text" class="form-control" id="car_model" name="car_model" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="car_registration" class="form-label">
+                                <i class="fas fa-id-card me-2"></i>Car Registration
+                            </label>
+                            <input type="text" class="form-control" id="car_registration" name="car_registration" placeholder="e.g., ABC123" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="booking_time" class="form-label">
+                                <i class="fas fa-clock me-2"></i>Preferred Time
+                            </label>
+                            <input type="datetime-local" class="form-control" id="booking_time" name="booking_time" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="service_type" class="form-label">
+                                <i class="fas fa-list-alt me-2"></i>Service Type
+                            </label>
+                            <select class="form-select service-type-select" id="service_type" name="service_type" required>
+                                <option value="Basic Wash">Basic Wash - $30</option>
+                                <option value="Premium Wash">Premium Wash - $50</option>
+                                <option value="Deluxe Package">Deluxe Package - $80</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check-circle me-2"></i>Book Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="bookings-list">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-check me-2"></i>Upcoming Bookings
+                    </h3>
+                    {% if bookings %}
+                        <div class="list-group">
+                        {% for booking in bookings %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <h5 class="mb-1">
+                                        <i class="fas fa-user-circle me-2"></i>{{ booking.customer_name }}
+                                    </h5>
+                                    <small>
+                                        <a href="{{ url_for('delete_booking', id=booking.id) }}" 
+                                           class="cancel-btn text-decoration-none" 
+                                           onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                            <i class="fas fa-times-circle me-1"></i>Cancel
+                                        </a>
+                                    </small>
+                                </div>
+                                <div class="booking-info">
+                                    <p class="mb-1">
+                                        <i class="fas fa-car me-2"></i>{{ booking.car_model }} - {{ booking.service_type }}
+                                    </p>
+                                    <p class="mb-1 registration">
+                                        <i class="fas fa-id-card me-2"></i>Registration: {{ booking.car_registration }}
+                                    </p>
+                                    <p class="mb-0 text-muted">
+                                        <i class="fas fa-clock me-2"></i>{{ booking.booking_time.strftime('%Y-%m-%d %H:%M') }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <p>No bookings scheduled yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
